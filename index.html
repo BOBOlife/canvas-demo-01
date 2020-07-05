@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CH">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canvas画板</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+      var canvas = document.getElementById("canvas");
+      canvas.width = document.documentElement.clientWidth;
+      canvas.height = document.documentElement.clientHeight;
+      //   canvas.style.background = "black";
+      var ctx = canvas.getContext("2d");
+      ctx.fillStyle = "black";
+
+      let painting = false; //红绿灯作用
+
+      ctx.strokeStyle = "none"; //轮廓的颜色
+      ctx.lineWidth = 6;
+      ctx.lineCap = "round";
+
+      var isTouchDevice = "ontouchstart" in document.documentElement;
+      if (isTouchDevice) {
+        canvas.ontouchstart = (e) => {
+          last = [e.touches[0].clientX, e.touches[0].clientY];
+        };
+        canvas.ontouchmove = (e) => {
+          ctx.beginPath();
+          ctx.moveTo(last[0], last[1]);
+          ctx.lineTo(e.touches[0].clientX, e.touches[0].clientY);
+          last = [e.touches[0].clientX, e.touches[0].clientY];
+          ctx.stroke();
+          ctx.fill();
+        };
+      } else {
+        canvas.onmousedown = (e) => {
+          painting = true;
+          //记录初始位置
+          positionX = e.clientX;
+          positionY = e.clientY;
+        };
+
+        canvas.onmousemove = (e) => {
+          if (painting === true) {
+            ctx.beginPath();
+            // ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI);
+
+            ctx.moveTo(positionX, positionY);
+            ctx.lineTo(e.clientX, e.clientY);
+            positionX = e.clientX;
+            positionY = e.clientY;
+            ctx.stroke();
+            ctx.fill();
+          } else {
+            console.log("什么都不做");
+          }
+        };
+
+        canvas.onmouseup = () => {
+          painting = false;
+        };
+      }
+    </script>
+  </body>
+</html>
